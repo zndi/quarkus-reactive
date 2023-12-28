@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quarkus-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: quarkus-app
+  template:
+    metadata:
+      labels:
+        app: quarkus-app
+    spec:
+      containers:
+        - name: quarkus-app-container
+          image: zndi/quarkus-test-jvm:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quarkus-app-service
+spec:
+  selector:
+    app: quarkus-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer

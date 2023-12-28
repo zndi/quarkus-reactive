@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-bdd
+  template:
+    metadata:
+      labels:
+        app: postgres-bdd
+    spec:
+      containers:
+        - name: postgres-name
+          image: postgres:14.1
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: ma-postgres-secret
+                  key: db-name
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbpostgre
+spec:
+  selector:
+    app: postgres-bdd
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
