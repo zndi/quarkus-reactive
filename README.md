@@ -47,6 +47,8 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 
 If you want deploy in kubernetes:
 ````shell script
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+
 kubectl apply -f src/main/kubernetes/Secret.yaml
 kubectl apply -f src/main/kubernetes/Postgres.yaml
 kubectl apply -f src/main/kubernetes/Application.yaml
